@@ -1,22 +1,36 @@
-// motor.h
+// Motor.h
 #ifndef MOTOR_H
 #define MOTOR_H
 
 #include <Arduino.h>
+#include <Servo.h>
 
-// Motor PWM settings
-#define PWM_UPPER_LIMIT 2000  // Full forward
-#define PWM_STOP_DUTY_CYCLE 1500
-#define PWM_LOWER_LIMIT 1000  // Full reverse
+class Motor {
+private:
+    Servo motorServo;           // Servo object for motor control
+    const int motorPin;         // Pin for motor control (constant after initialization)
+    const int pwmUpperLimit;    // Full forward PWM limit
+    const int pwmLowerLimit;    // Full reverse PWM limit
+    const int pwmStopDutyCycle; // Stop position PWM value
 
+    float currentSpeed;  // Current speed (-1 to 1)
+    float targetSpeed;   // Target speed (-1 to 1)
 
-// Speed percentage limits
-#define MOTOR_MIN_PERCENT -100
-#define MOTOR_MAX_PERCENT 100
+public:
+    // Constructor
+    Motor(int pin, int upperLimit = 2000, int lowerLimit = 1000, int stopDutyCycle = 1500);
 
-void motor_init(int pin, float increment_step=1);
-void motor_set_speed(float percent);
-float motor_ramp_to_speed(float percent);
-float motor_get_current_speed();
+    // Initialize the motor
+    void init();
+
+    // Set the motor speed directly
+    void setSpeed(float speed);
+
+    // Gradually ramp to the target speed, returns the current speed
+    float rampToSpeed(float speed, float incrementStep = 0.1);
+
+    // Get the current motor speed
+    float getCurrentSpeed() const;
+};
 
 #endif // MOTOR_H
